@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.append(os.pardir)
-sys.path.insert(1,'/content/drive/MyDrive/RL/DBRL/' )
+sys.path.insert(1,'/kaggle/working/RL_RS/DBRL')
 import warnings
 warnings.filterwarnings("ignore")
 import argparse
@@ -42,8 +42,7 @@ if __name__ == "__main__":
 
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
-    PATH = os.path.join("/content/drive/MyDrive/RL/DBRL/dbrl/resources", args.data)
-    EMBEDDING_PATH = "/content/drive/MyDrive/RL/DBRL/dbrl/resources/"
+    PATH = "/kaggle/working/tianchi.csv"
     static_feat = ["sex", "age", "pur_power"]
     dynamic_feat = ["category", "shop", "brand"]
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -126,7 +125,7 @@ if __name__ == "__main__":
         use_bn=True
     ).to(device)
     if pretrain:
-      checkpoint = torch.load('/content/drive/MyDrive/RL/DBRL/dbrl/weights/model_dssm.pt')
+      checkpoint = torch.load('model_dssm.pt')
       model.load_state_dict(checkpoint['model_state_dict'])
       print('Load pretrain successful')
     else:
@@ -141,8 +140,8 @@ if __name__ == "__main__":
     print(f"user_embeds shape: {user_embeddings.shape},"
           f" item_embeds shape: {item_embeddings.shape}")
 
-    save_npy(user_embeddings, item_embeddings, EMBEDDING_PATH)
+    save_npy(user_embeddings, item_embeddings, "/kaggle/working/")
     save_json(
-        user_map, item_map, user_embeddings, item_embeddings, EMBEDDING_PATH
+        user_map, item_map, user_embeddings, item_embeddings, "/kaggle/working/"
     )
     print("pretrain embeddings done!")
