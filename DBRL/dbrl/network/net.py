@@ -62,6 +62,8 @@ class Actor(nn.Module):
         self.fc2 = nn.Linear(hidden_size_1, hidden_size_2)
         self.fc3 = nn.Linear(hidden_size_2, action_dim)
         #self.ln1 = nn.LayerNorm(hidden_size, elementwise_affine = False)
+        self.ln1 = nn.LayerNorm(hidden_size_1, elementwise_affine = False)
+        self.ln2 = nn.LayerNorm(hidden_size_2, elementwise_affine = False)
         self.pad_val = pad_val
         self.device = device
 
@@ -88,8 +90,8 @@ class Actor(nn.Module):
         return state
 
     def get_action(self, state, tanh=False):
-        action = F.relu(self.fc1(state))
-        action = F.relu(self.fc2(action))
+        action = F.relu(self.ln1(self.fc1(state)))
+        action = F.relu(self.ln2(self.fc2(action)))
         action = self.fc3(action)
         if tanh:
             action = F.tanh(action)
