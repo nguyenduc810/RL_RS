@@ -31,16 +31,17 @@ def init_param_bcq(generator, perturbator, critic1, critic2):
 
 def init_param(actor, other):
     for name, param in actor.named_parameters():
-        if "bias" in name:
-            nn.init.zeros_(param)
-        elif "embeds" not in name:
-            nn.init.xavier_uniform_(param)
+        # if "bias" in name:
+        #     nn.init.zeros_(param)
+        # elif "embeds" not in name:
+        #     nn.init.xavier_uniform_(param)
+        nn.init.normal_(param, mean=0, std = 3*1e-3)
     for name, param in other.named_parameters():
-        if "bias" in name:
-            nn.init.zeros_(param)
-        else:
-            nn.init.xavier_uniform_(param)
-
+        # if "bias" in name:
+        #     nn.init.zeros_(param)
+        # else:
+        #     nn.init.xavier_uniform_(param)
+        nn.init.normal_(param, mean=0, std= 3*1e-4)
 
 def init_param_dssm(model):
     for name, param in model.named_parameters():
