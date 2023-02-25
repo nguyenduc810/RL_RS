@@ -62,8 +62,8 @@ class Actor(nn.Module):
         self.fc2 = nn.Linear(hidden_size_1, hidden_size_2)
         self.fc3 = nn.Linear(hidden_size_2, action_dim)
         #self.ln1 = nn.LayerNorm(hidden_size, elementwise_affine = False)
-        self.ln1 = nn.LayerNorm(hidden_size_1, elementwise_affine = False)
-        self.ln2 = nn.LayerNorm(hidden_size_2, elementwise_affine = False)
+        self.bn1 = nn.BatchNorm1d (hidden_size_1)
+        self.bn2 = nn.BatchNorm1d(hidden_size_2)
         self.pad_val = pad_val
         self.device = device
 
@@ -89,15 +89,15 @@ class Actor(nn.Module):
         state = torch.cat([user_repr, item_repr], dim=1)
         return state
 
-    def get_action(self, state, tanh=False):
-        action = F.relu(self.ln1(self.fc1(state)))
-        action = F.relu(self.ln2(self.fc2(action)))
+    def get_action(self, state, tanh=True):
+        action = F.relu(self.bn1(self.fc1(state)))
+        action = F.relu(self.bn2(self.fc2(action)))
         action = self.fc3(action)
         if tanh:
             action = F.tanh(action)
         return action
 
-    def forward(self, data, tanh=False):
+    def forward(self, data, tanh=True):
         state = self.get_state(data)
         action = self.get_action(state, tanh)
         return state, action
@@ -115,13 +115,13 @@ class Critic(nn.Module):
         self.fc1 = nn.Linear(input_dim + action_dim, hidden_size_1)
         self.fc2 = nn.Linear(hidden_size_1, hidden_size_2)
         self.fc3 = nn.Linear(hidden_size_2, 1)
-        self.ln1 = nn.LayerNorm(hidden_size_1, elementwise_affine = False)
-        self.ln2 = nn.LayerNorm(hidden_size_2, elementwise_affine = False)
+        self.bn1 = nn.BatchNorm1d(hidden_size_1)
+        self.bn2 = nn.BatchNorm1d(hidden_size_2)
 
     def forward(self, state, action):
         out = torch.cat([state, action], dim=1)
-        out = F.relu(self.ln1(self.fc1(out)))
-        out = F.relu(self.ln2(self.fc2(out)))
+        out = F.relu(self.bn1(self.fc1(out)))
+        out = F.relu(self.bn2(self.fc2(out)))
         #out = F.relu(self.fc2(out))
         out = self.fc3(out)
         return out.squeeze()
