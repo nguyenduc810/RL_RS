@@ -2,7 +2,7 @@ import numpy as np
 
 
 def ndcg_at_k(y_true_list, y_reco_list, rewards, users=None, k=10, next_item=False,
-              all_item=False):
+              all_item=False, recall=False):
     if next_item:
         ndcg_all = []
         y_true_list = y_true_list.tolist()
@@ -29,7 +29,18 @@ def ndcg_at_k(y_true_list, y_reco_list, rewards, users=None, k=10, next_item=Fal
             y_reco = y_reco_list[i]
             ndcg_all.append(ndcg_one(y_true, y_reco, k))
         return np.mean(ndcg_all)
-
+    elif recall:
+      recall_list = []
+      users = users.tolist()
+      y_reco_list = y_reco_list.tolist()
+      for i in range(len(y_reco_list)):
+          y_true = y_true_list[users[i]]
+          y_reco = y_reco_list[i]
+          common_items, indices_in_true, indices_in_reco = np.intersect1d(
+          y_true, y_reco, assume_unique=False, return_indices=True)
+          recall_ = common_items.size/len(y_true)
+          recall_list.append(recall_)
+      return np.mean(recall_list)
     else:
         ndcg_all = list()
         for u in users:
@@ -54,5 +65,4 @@ def ndcg_one(y_true, y_reco, k):
     else:
         ndcg = 0.
     return ndcg
-
 

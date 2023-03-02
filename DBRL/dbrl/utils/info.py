@@ -8,6 +8,7 @@ class Collector:
             "rewards": [],
             "ndcg_next_item": [],
             "ndcg_all_item": [],
+            "recall": []
         }
 
         if model == "ddpg":
@@ -66,6 +67,9 @@ class Collector:
                         writer.add_scalar('ndcg_all_item/train', np.mean(v), epoch)
                     else:
                         writer.add_scalar('ndcg_all_item/eval', np.mean(v), epoch)
+            elif k == "recall":
+              print(f"{k}: {np.mean(v):.6f}", end=", ")
+
 
         print(f"ndcg: {self.metrics['ndcg']:.6f}")
         if train_flag:

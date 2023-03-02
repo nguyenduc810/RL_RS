@@ -40,9 +40,12 @@ def batch_eval(
         rec_idxs = rec_idxs.cpu().numpy()
         ndcg_next_item = ndcg_at_k(target_items.cpu().numpy(), rec_idxs, reward_items.cpu().numpy(),next_item=True)
         ndcg_all_item = ndcg_at_k(user_consumed, rec_idxs,rewards = None,users= users.cpu().numpy(),k= n_rec, all_item=True)
+        recall_ = ndcg_at_k(user_consumed, rec_idxs,rewards = None,users= users.cpu().numpy(),k= n_rec, recall=True)
         res = {"rewards": rewards,
                "ndcg_next_item": ndcg_next_item,
-               "ndcg_all_item": ndcg_all_item}
+               "ndcg_all_item": ndcg_all_item,
+               "recall": recall_
+               }
         return res
 
 
@@ -111,5 +114,4 @@ def last_eval(
     #    col_indices = torch.cat([torch.randperm(n_rec * 2)[:n_rec] for _ in range(batch_size)])
     #    row_indices = torch.arange(batch_size).repeat_interleave(n_rec)
     #    rec_idxs = rec[row_indices, col_indices].reshape(batch_size, -1)
-
 
